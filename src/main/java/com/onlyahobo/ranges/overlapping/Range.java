@@ -1,6 +1,8 @@
 package com.onlyahobo.ranges.overlapping;
 
-class Range {
+import static com.google.common.base.Preconditions.checkArgument;
+
+class Range implements Comparable<Range> {
 
     private final int from;
 
@@ -11,6 +13,7 @@ class Range {
     private final boolean rightOpen;
 
     Range(int from, int to, boolean leftOpen, boolean rightOpen) {
+        checkArgument(from != to, String.format("Illegal single-value interval passed: %s-%s", from, to));
         if (from > to) {
             this.to = from;
             this.from = to;
@@ -22,17 +25,12 @@ class Range {
         this.rightOpen = rightOpen;
     }
 
-    boolean overlapWith(Range otherRange) {
-        return overlapWithNotConsideringRangeClosedness(otherRange) || overlapWithBecauseOfRangeClosedness(otherRange);
+    boolean overlapWithRangeStartingFurther(Range o) {
+        return this.to > o.from || this.shareCommonBorderPoint(o);
     }
 
-    private boolean overlapWithNotConsideringRangeClosedness(Range otherRange) {
-        return this.from < otherRange.to && this.to > otherRange.from;
-    }
-
-    private boolean overlapWithBecauseOfRangeClosedness(Range otherRange) {
-        return (this.from == otherRange.to && leftClosed() && otherRange.rightClosed())
-            || (this.to == otherRange.from && rightClosed() && otherRange.leftClosed());
+    private boolean shareCommonBorderPoint(Range o) {
+        return (this.from == o.to && leftClosed() && o.rightClosed()) || (this.to == o.from && rightClosed() && o.leftClosed());
     }
 
     private boolean leftClosed() {
@@ -43,4 +41,8 @@ class Range {
         return !rightOpen;
     }
 
+    @Override public int compareTo(final Range o) {
+        final int result = Integer.compare(to, o.to);
+        return result != 0 ? result : Boolean.compare(rightClosed(), o.rightClosed());
+    }
 }
