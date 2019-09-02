@@ -1,7 +1,10 @@
 package com.onlyahobo.ranges.overlapping;
 
+import lombok.Getter;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
+@Getter
 class Range implements Comparable<Range> {
 
     private final int from;

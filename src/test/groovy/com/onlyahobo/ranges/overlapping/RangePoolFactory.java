@@ -74,4 +74,14 @@ class RangePoolFactory {
         return new RangePool(RANGE16_17_CLOSED, RANGE16_17_OPEN, RANGE17_20_CLOSED);
     }
 
+    static RangePool twoNonOverlappingRangesAndAPairOfOverlappingRanges() {
+        final Range RANGE_1_5_LEFT_CLOSED = new Range(1, 5, false, true);
+        final Range RANGE_5_10_LEFT_CLOSED = new Range(5, 10, false, true);
+
+        final Range RANGE_20_30_RIGHT_CLOSED = new Range(25, 30, true, false);
+        final Range RANGE_30_31_CLOSED = new Range(30, 31,false, false);
+
+        return new RangePool(RANGE_1_5_LEFT_CLOSED, RANGE_5_10_LEFT_CLOSED, RANGE_20_30_RIGHT_CLOSED, RANGE_30_31_CLOSED);
+    }
+
 }

@@ -4,31 +4,28 @@ import spock.lang.Specification
 
 import static com.onlyahobo.ranges.overlapping.RangePoolFactory.*
 
-/**
- * Copyright (c) Asseco Business Solutions S.A. All rights reserved.
- */
-
 class RangePoolTest extends Specification {
 
-    def "testing multiple ranges for overlapping"() {
-        when: "calling the #range.getOverlappingRangeCount() method"
-        def result = rangePool.getOverlappingRangeCount()
+    def "testing the number of summed overlapping ranges"() {
+        when: "calling the #range.getSummedRangeCount() method"
+        def result = rangePool.getSummedRangeCount()
 
-        then: "overlapping range count should be as #expected"
+        then: "summed overlapping range count should be as #expected"
         result == expected
 
         where:
         rangePool                                                                      || expected
-        twoIdenticalOpenRanges()                                                       || 2
-        twoOverlappingOpenRanges()                                                     || 2
+        twoIdenticalOpenRanges()                                                       || 1
+        twoOverlappingOpenRanges()                                                     || 1
         twoOverlappingAndOneNonOverlappingOpenRanges()                                 || 2
-        fourOverlappingOpenRangesEachOfThemOverlappingWithOneRange()                   || 4
-        twoOverlappingHalfOpenRanges()                                                 || 2
-        twoNonOverlappingHalfOpenRanges()                                              || 0
-        fiveOverlappingClosedRanges()                                                  || 5
-        fiveNonOverlappingClosedRanges()                                               || 0
-        twoIdenticalAndOneContainedRanges()                                            || 3
-        twoSameIntervalRangesOneClosedSecondOpenAndThirdStartingFromWherePreviousEnd() || 3
+        fourOverlappingOpenRangesEachOfThemOverlappingWithOneRange()                   || 2
+        twoOverlappingHalfOpenRanges()                                                 || 1
+        twoNonOverlappingHalfOpenRanges()                                              || 2
+        fiveOverlappingClosedRanges()                                                  || 1
+        fiveNonOverlappingClosedRanges()                                               || 5
+        twoIdenticalAndOneContainedRanges()                                            || 1
+        twoSameIntervalRangesOneClosedSecondOpenAndThirdStartingFromWherePreviousEnd() || 1
+        twoNonOverlappingRangesAndAPairOfOverlappingRanges()                           || 3
     }
 
 }
