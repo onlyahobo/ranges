@@ -4,7 +4,6 @@ import lombok.Getter;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
-import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Comparator.comparing;
@@ -13,6 +12,10 @@ import static java.util.Comparator.comparingInt;
 @Getter
 class Range implements Comparable<Range> {
 
+    private static final Comparator<Range> FURTHER_CLOSING = comparingInt(Range::getTo).thenComparing(Range::rightClosed);
+
+    private static final Comparator<Range> LOWER_STARTING = comparing(Range::getFrom).thenComparing(Range::isLeftOpen);
+
     private final int from;
 
     private final int to;
@@ -20,10 +23,6 @@ class Range implements Comparable<Range> {
     private final boolean leftOpen;
 
     private final boolean rightOpen;
-
-    private static final Comparator<Range> FURTHER_CLOSING = comparingInt(Range::getTo).thenComparing(Range::rightClosed);
-
-    private static final Comparator<Range> LOWER_STARTING = comparing(Range::getFrom).thenComparing(Range::isLeftOpen);
 
     Range(int from, int to, boolean leftOpen, boolean rightOpen) {
         checkArgument(from != to, String.format("Illegal single-value interval passed: %s-%s", from, to));
@@ -64,6 +63,6 @@ class Range implements Comparable<Range> {
     }
 
     @Override public int compareTo(@Nonnull Range other) {
-        return FURTHER_CLOSING.compare(this, Objects.requireNonNull(other));
+        return FURTHER_CLOSING.compare(this, other);
     }
 }
