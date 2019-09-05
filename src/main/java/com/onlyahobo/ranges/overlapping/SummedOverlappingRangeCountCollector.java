@@ -10,8 +10,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static java.util.Comparator.comparing;
-
 class SummedOverlappingRangeCountCollector implements Collector<Range, List<Range>, Integer> {
 
     @Override public Supplier<List<Range>> supplier() {
@@ -20,12 +18,9 @@ class SummedOverlappingRangeCountCollector implements Collector<Range, List<Rang
 
     @Override public BiConsumer<List<Range>, Range> accumulator() {
         return (resultList, next) -> {
-            final int lastResultListIndex = resultList.size() - 1;
-
+            final var lastResultListIndex = resultList.size() - 1;
             if (!resultList.isEmpty() && previousOverlapsWithNext(resultList.get(lastResultListIndex), next)) {
-                final Range lowerStartingRange = resolveLowerStartingRange(resultList.get(lastResultListIndex), next);
-                final Range mergedRange = new Range(lowerStartingRange.getFrom(), next.getTo(), lowerStartingRange.isLeftOpen(), next.isRightOpen());
-                resultList.set(lastResultListIndex, mergedRange);
+                resultList.set(lastResultListIndex, Range.sumAndGet(resultList.get(lastResultListIndex), next));
             } else {
                 resultList.add(next);
             }
@@ -46,11 +41,7 @@ class SummedOverlappingRangeCountCollector implements Collector<Range, List<Rang
         return Collections.emptySet();
     }
 
-    private Range resolveLowerStartingRange(final Range previous, final Range next) {
-        return comparing(Range::getFrom).thenComparing(Range::isLeftOpen).compare(previous, next) <= 0 ? previous : next;
-    }
-
-    private boolean previousOverlapsWithNext(final Range previous, final Range next) {
+    private boolean previousOverlapsWithNext(Range previous, Range next) {
         return previous.overlapWithRangeStartingFurther(next);
     }
 

@@ -41,45 +41,45 @@ class RangePoolFactory {
     }
 
     static RangePool fiveOverlappingClosedRanges() {
-        final Range RANGE1_5_CLOSED = new Range(1, 5, false, false);
-        final Range RANGE5_10_CLOSED = new Range(5, 10, false, false);
-        final Range RANGE10_15_CLOSED = new Range(10, 15, false, false);
-        final Range RANGE15_20_CLOSED = new Range(15, 20, false, false);
-        final Range RANGE20_25_CLOSED = new Range(25, 20, false, false);
+        final var RANGE1_5_CLOSED = new Range(1, 5, false, false);
+        final var RANGE5_10_CLOSED = new Range(5, 10, false, false);
+        final var RANGE10_15_CLOSED = new Range(10, 15, false, false);
+        final var RANGE15_20_CLOSED = new Range(15, 20, false, false);
+        final var RANGE20_25_CLOSED = new Range(25, 20, false, false);
 
         return new RangePool(RANGE1_5_CLOSED, RANGE5_10_CLOSED, RANGE10_15_CLOSED, RANGE15_20_CLOSED, RANGE20_25_CLOSED);
     }
 
     static RangePool fiveNonOverlappingClosedRanges() {
-        final Range RANGE15_20_LEFT_OPEN_RIGHT_CLOSED = new Range(10, 15, true, false);
-        final Range RANGE10_15_LEFT_OPEN_RIGHT_CLOSED = new Range(15, 20, true, false);
-        final Range RANGE20_25_LEFT_OPEN_RIGHT_CLOSED = new Range(25, 20, true, false);
+        final var RANGE15_20_LEFT_OPEN_RIGHT_CLOSED = new Range(10, 15, true, false);
+        final var RANGE10_15_LEFT_OPEN_RIGHT_CLOSED = new Range(15, 20, true, false);
+        final var RANGE20_25_LEFT_OPEN_RIGHT_CLOSED = new Range(25, 20, true, false);
 
         return new RangePool(RANGE1_5_LEFT_OPEN_RIGHT_CLOSED, RANGE5_10_LEFT_OPEN_RIGHT_CLOSED, RANGE15_20_LEFT_OPEN_RIGHT_CLOSED,
             RANGE10_15_LEFT_OPEN_RIGHT_CLOSED, RANGE20_25_LEFT_OPEN_RIGHT_CLOSED);
     }
 
     static RangePool twoIdenticalAndOneContainedRanges() {
-        final Range RANGE1_20_OPEN = new Range(1, 20, true, true);
-        final Range RANGE10_15_OPEN = new Range(11, 15, true, true);
+        final var RANGE1_20_OPEN = new Range(1, 20, true, true);
+        final var RANGE10_15_OPEN = new Range(11, 15, true, true);
 
         return new RangePool(RANGE1_20_OPEN, RANGE1_20_OPEN, RANGE10_15_OPEN);
     }
 
     static RangePool twoSameIntervalRangesOneClosedSecondOpenAndThirdStartingFromWherePreviousEnd() {
-        final Range RANGE16_17_CLOSED = new Range(16, 17, false, false);
-        final Range RANGE16_17_OPEN = new Range(16, 17, true, true);
-        final Range RANGE17_20_CLOSED = new Range(17, 20, false, false);
+        final var RANGE16_17_CLOSED = new Range(16, 17, false, false);
+        final var RANGE16_17_OPEN = new Range(16, 17, true, true);
+        final var RANGE17_20_CLOSED = new Range(17, 20, false, false);
 
         return new RangePool(RANGE16_17_CLOSED, RANGE16_17_OPEN, RANGE17_20_CLOSED);
     }
 
     static RangePool twoNonOverlappingRangesAndAPairOfOverlappingRanges() {
-        final Range RANGE_1_5_LEFT_CLOSED = new Range(1, 5, false, true);
-        final Range RANGE_5_10_LEFT_CLOSED = new Range(5, 10, false, true);
+        final var RANGE_1_5_LEFT_CLOSED = new Range(1, 5, false, true);
+        final var RANGE_5_10_LEFT_CLOSED = new Range(5, 10, false, true);
 
-        final Range RANGE_20_30_RIGHT_CLOSED = new Range(25, 30, true, false);
-        final Range RANGE_30_31_CLOSED = new Range(30, 31,false, false);
+        final var RANGE_20_30_RIGHT_CLOSED = new Range(25, 30, true, false);
+        final var RANGE_30_31_CLOSED = new Range(30, 31,false, false);
 
         return new RangePool(RANGE_1_5_LEFT_CLOSED, RANGE_5_10_LEFT_CLOSED, RANGE_20_30_RIGHT_CLOSED, RANGE_30_31_CLOSED);
     }

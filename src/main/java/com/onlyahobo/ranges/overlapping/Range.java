@@ -2,7 +2,13 @@ package com.onlyahobo.ranges.overlapping;
 
 import lombok.Getter;
 
+import javax.annotation.Nonnull;
+import java.util.Comparator;
+import java.util.Objects;
+
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
 
 @Getter
 class Range implements Comparable<Range> {
@@ -14,6 +20,10 @@ class Range implements Comparable<Range> {
     private final boolean leftOpen;
 
     private final boolean rightOpen;
+
+    private static final Comparator<Range> FURTHER_CLOSING = comparingInt(Range::getTo).thenComparing(Range::rightClosed);
+
+    private static final Comparator<Range> LOWER_STARTING = comparing(Range::getFrom).thenComparing(Range::isLeftOpen);
 
     Range(int from, int to, boolean leftOpen, boolean rightOpen) {
         checkArgument(from != to, String.format("Illegal single-value interval passed: %s-%s", from, to));
@@ -28,12 +38,21 @@ class Range implements Comparable<Range> {
         this.rightOpen = rightOpen;
     }
 
-    boolean overlapWithRangeStartingFurther(Range o) {
-        return this.to > o.from || this.shareCommonBorderPoint(o);
+    static Range sumAndGet(Range left, Range right) {
+        final var lowerStartingRange = left.getLowerStarting(right);
+        return new Range(lowerStartingRange.getFrom(), right.getTo(), lowerStartingRange.isLeftOpen(), right.isRightOpen());
     }
 
-    private boolean shareCommonBorderPoint(Range o) {
-        return (this.from == o.to && leftClosed() && o.rightClosed()) || (this.to == o.from && rightClosed() && o.leftClosed());
+    boolean overlapWithRangeStartingFurther(Range other) {
+        return this.to > other.from || this.shareCommonBorderPoint(other);
+    }
+
+    private Range getLowerStarting(Range other) {
+        return Range.LOWER_STARTING.compare(this, other) <= 0 ? this : other;
+    }
+
+    private boolean shareCommonBorderPoint(Range other) {
+        return (this.from == other.to && leftClosed() && other.rightClosed()) || (this.to == other.from && rightClosed() && other.leftClosed());
     }
 
     private boolean leftClosed() {
@@ -44,8 +63,7 @@ class Range implements Comparable<Range> {
         return !rightOpen;
     }
 
-    @Override public int compareTo(final Range o) {
-        final int result = Integer.compare(to, o.to);
-        return result != 0 ? result : Boolean.compare(rightClosed(), o.rightClosed());
+    @Override public int compareTo(@Nonnull Range other) {
+        return FURTHER_CLOSING.compare(this, Objects.requireNonNull(other));
     }
 }
