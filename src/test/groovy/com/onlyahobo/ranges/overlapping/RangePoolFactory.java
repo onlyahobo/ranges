@@ -77,11 +77,28 @@ class RangePoolFactory {
     static RangePool twoNonOverlappingRangesAndAPairOfOverlappingRanges() {
         final var RANGE_1_5_LEFT_CLOSED = new Range(1, 5, false, true);
         final var RANGE_5_10_LEFT_CLOSED = new Range(5, 10, false, true);
-
         final var RANGE_20_30_RIGHT_CLOSED = new Range(25, 30, true, false);
         final var RANGE_30_31_CLOSED = new Range(30, 31,false, false);
 
         return new RangePool(RANGE_1_5_LEFT_CLOSED, RANGE_5_10_LEFT_CLOSED, RANGE_20_30_RIGHT_CLOSED, RANGE_30_31_CLOSED);
+    }
+
+    //This one won't work with sorting by Range.to since <1,5) and <5,7> don't overlap with each other yet <4,10) overlaps with each of them
+    static RangePool getTwoNonOverlappingAndOneOverlappingThemBoth() {
+        final var RANGE_1_5_LEFT_CLOSED = new Range(1, 5, false, true);
+        final var RANGE_5_7_CLOSED = new Range(5, 7, false, false);
+        final var RANGE_4_10_LEFT_CLOSED = new Range(4, 10, false, true);
+
+        return new RangePool(RANGE_1_5_LEFT_CLOSED, RANGE_4_10_LEFT_CLOSED, RANGE_5_7_CLOSED);
+    }
+
+    //This one won't work with sorting by Range.to since <20,40> and <60,80> don't overlap with each other yet <1,100> overlaps with each of them
+    static RangePool getTwoNonOverlappingAndOneOverlappingThemBoth2() {
+        final var RANGE_1_100_CLOSED = new Range(1, 100, false, false);
+        final var RANGE_20_40_CLOSED = new Range(20, 40, false, false);
+        final var RANGE_60_80_CLOSED = new Range(60, 80, false, false);
+
+        return new RangePool(RANGE_1_100_CLOSED, RANGE_20_40_CLOSED, RANGE_60_80_CLOSED);
     }
 
 }

@@ -6,15 +6,14 @@ import javax.annotation.Nonnull;
 import java.util.Comparator;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Comparator.comparing;
 import static java.util.Comparator.comparingInt;
 
 @Getter
 class Range implements Comparable<Range> {
 
-    private static final Comparator<Range> FURTHER_CLOSING = comparingInt(Range::getTo).thenComparing(Range::rightClosed);
+    private static final Comparator<Range> LOWER_STARTING = comparingInt(Range::getFrom).thenComparing(Range::isLeftOpen);
 
-    private static final Comparator<Range> LOWER_STARTING = comparing(Range::getFrom).thenComparing(Range::isLeftOpen);
+    private static final Comparator<Range> FURTHER_CLOSING = comparingInt(Range::getTo).thenComparing(Range::rightClosed);
 
     private final int from;
 
@@ -25,7 +24,6 @@ class Range implements Comparable<Range> {
     private final boolean rightOpen;
 
     Range(int from, int to, boolean leftOpen, boolean rightOpen) {
-        checkArgument(from != to, String.format("Illegal single-value interval passed: %s-%s", from, to));
         if (from > to) {
             this.to = from;
             this.from = to;
@@ -35,19 +33,45 @@ class Range implements Comparable<Range> {
         }
         this.leftOpen = leftOpen;
         this.rightOpen = rightOpen;
+        checkArgument(from != to || (leftClosed() && rightClosed()), String.format("Illegal range: %s", this));
     }
 
-    static Range sumAndGet(Range left, Range right) {
+    static Range sum(Range left, Range right) {
+        if (!left.overlapWith(right)) {
+            throw new CannotSumRangesException(left, right);
+        }
         final var lowerStartingRange = left.getLowerStarting(right);
-        return new Range(lowerStartingRange.getFrom(), right.getTo(), lowerStartingRange.isLeftOpen(), right.isRightOpen());
+        final var furtherClosingRange = left.getFurtherClosing(right);
+        return new Range(lowerStartingRange.getFrom(), furtherClosingRange.getTo(), lowerStartingRange.isLeftOpen(), furtherClosingRange.isRightOpen());
     }
 
-    boolean overlapWithRangeStartingFurther(Range other) {
-        return this.to > other.from || this.shareCommonBorderPoint(other);
+    static Range intersection(Range left, Range right) {
+        if (!left.overlapWith(right)) {
+            throw new CannotIntersectRangesException(left, right);
+        }
+        final var furtherStartingRange = left.getFurtherStarting(right);
+        final var lowerClosingRange = left.getLowerClosing(right);
+        return new Range(furtherStartingRange.getFrom(), lowerClosingRange.getTo(), furtherStartingRange.isLeftOpen(), lowerClosingRange.isRightOpen());
+    }
+
+    boolean overlapWith(Range other) {
+        return (this.from < other.to && this.to > other.from) || this.shareCommonBorderPoint(other);
     }
 
     private Range getLowerStarting(Range other) {
-        return Range.LOWER_STARTING.compare(this, other) <= 0 ? this : other;
+        return LOWER_STARTING.compare(this, other) <= 0 ? this : other;
+    }
+
+    private Range getFurtherStarting(Range other) {
+        return LOWER_STARTING.compare(this, other) <= 0 ? other : this;
+    }
+
+    private Range getLowerClosing(Range other) {
+        return FURTHER_CLOSING.compare(this, other) <= 0 ? this : other;
+    }
+
+    private Range getFurtherClosing(Range other) {
+        return FURTHER_CLOSING.compare(this, other) <= 0 ? other : this;
     }
 
     private boolean shareCommonBorderPoint(Range other) {
@@ -63,6 +87,11 @@ class Range implements Comparable<Range> {
     }
 
     @Override public int compareTo(@Nonnull Range other) {
-        return FURTHER_CLOSING.compare(this, other);
+        return LOWER_STARTING.compare(this, other);
     }
+
+    @Override public String toString() {
+        return (leftOpen ? "(" : "<") + from + ", " + to + (rightOpen ? ")" : ">");
+    }
+
 }

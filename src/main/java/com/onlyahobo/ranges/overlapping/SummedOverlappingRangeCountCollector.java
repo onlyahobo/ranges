@@ -20,7 +20,7 @@ class SummedOverlappingRangeCountCollector implements Collector<Range, List<Rang
         return (resultList, next) -> {
             final var lastResultListIndex = resultList.size() - 1;
             if (!resultList.isEmpty() && previousOverlapsWithNext(resultList.get(lastResultListIndex), next)) {
-                resultList.set(lastResultListIndex, Range.sumAndGet(resultList.get(lastResultListIndex), next));
+                resultList.set(lastResultListIndex, Range.sum(resultList.get(lastResultListIndex), next));
             } else {
                 resultList.add(next);
             }
@@ -42,7 +42,7 @@ class SummedOverlappingRangeCountCollector implements Collector<Range, List<Rang
     }
 
     private boolean previousOverlapsWithNext(Range previous, Range next) {
-        return previous.overlapWithRangeStartingFurther(next);
+        return previous.overlapWith(next);
     }
 
 }
